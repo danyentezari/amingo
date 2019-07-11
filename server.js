@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const User = require('./models/User');
+const Post = require('./models/Post');
 
 const db = "mongodb+srv://astrolabs:makeithappen@cluster0-4h9ap.mongodb.net/test?retryWrites=true&w=majority"
 
@@ -17,24 +18,36 @@ app.get('/', (req, res) => res.json({
     msg: "Hello Amingo!!"
 }));
 
-app.post('/users', (req, res) => {
-    const newUser = new User(({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password
-    }))
+const userRoutes = require('./routes/User')
+app.use('/users', userRoutes);
 
-    newUser
-        .save()
-        .then(user => res.json(user))
-        .catch(err => console.log(err))
+app.post('/posts', (req, res) => {
+    User
+    .findOne({email: req.body.email})
+    .then( user => {
+        console.log("User found", user);
+        if (user) {
+            const newPost = new Post({
+                message: req.body.message,
+                user: user
+            })
+            newPost
+                .save()
+                .then(post=> res.json (post))
+                .catch(err => res.json(err))
+        } else {
+            return res.status(400).json({message: "User not found"})
+        }
+    })
 });
 
-app.get('/users', (req, res) => {
-    User.find()
-        .then(users => res.json(users))
+//Method: GET
+// Route to fetch all the posts from collection
+app.get('/posts', (req, res) => {
+    Post.find()
+        .then(posts => res.json(posts))
         .catch(err => console.log(err)) 
-})
+});
 
 const port = process.env.PORT || 5000;
 
