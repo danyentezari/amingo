@@ -22,43 +22,15 @@ mongoose
 const userRoutes = require('./routes/User');
 app.use('/users', userRoutes);
 
+//Post routes
+const postRoutes = require('./routes/Post');
+app.user('/posts', postRoutes);
 
 // Method: GET
 // The homepage
 app.get('/', (req, res) => res.json({
     msg: "Hello Amingo!!"
 }));
-
-
-// Method: POST
-// Creates a new post
-app.post('/posts', (req, res) => {
-    User
-    .findOne({email: req.body.email})
-    .then( user => {
-        console.log("User found", user);
-        if (user) {
-            const newPost = new Post({
-                message: req.body.message,
-                user: user
-            })
-            newPost
-                .save()
-                .then(post=> res.json (post))
-                .catch(err => res.json(err))
-        } else {
-            return res.status(400).json({message: "User not found"})
-        }
-    })
-});
-
-// Method: GET
-// Route to fetch all the posts from collection
-app.get('/posts', (req, res) => {
-    Post.find()
-        .then(posts => res.json(posts))
-        .catch(err => console.log(err)) 
-});
 
 // If port is specified, user it. Otherwise default to 5000
 const port = process.env.PORT || 5000;
