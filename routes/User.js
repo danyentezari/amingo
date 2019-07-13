@@ -64,16 +64,5 @@ router.post('/posts', (req, res) => {
         .catch(err => res.json(err))
 });
 
-router.get('/login', (req, res) => {
-    //...
-});
-
-router.get('/register', (req, res) => {
-    //...
-});
-
-router.get('/profile', (req, res) => {
-    //...
-});
 
 module.exports = router;
