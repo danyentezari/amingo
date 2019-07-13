@@ -4,12 +4,13 @@ const bodyParser = require('body-parser');
 const app = express();
 const User = require('./models/User');
 const Post = require('./models/Post');
+const keys = require('./config/keys');
 
 // Configure express to read body from a POST request
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Database connection string
-const db = "mongodb+srv://astrolabs:makeithappen@cluster0-4h9ap.mongodb.net/test?retryWrites=true&w=majority"
+const db = keys.mongoURI;
 
 // Connect to mongo with mongoose
 mongoose
