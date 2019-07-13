@@ -24,7 +24,7 @@ app.use('/users', userRoutes);
 
 //Post routes
 const postRoutes = require('./routes/Post');
-app.user('/posts', postRoutes);
+app.use('/posts', postRoutes);
 
 // Method: GET
 // The homepage
