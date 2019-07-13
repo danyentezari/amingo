@@ -5,22 +5,33 @@ const app = express();
 const User = require('./models/User');
 const Post = require('./models/Post');
 
-const db = "mongodb+srv://astrolabs:makeithappen@cluster0-4h9ap.mongodb.net/test?retryWrites=true&w=majority"
-
+// Configure express to read body from a POST request
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Database connection string
+const db = "mongodb+srv://astrolabs:makeithappen@cluster0-4h9ap.mongodb.net/test?retryWrites=true&w=majority"
+
+// Connect to mongo with mongoose
 mongoose
     .connect(db, {})
     .then(()=> console.log("Db Connected"))
     .catch(err => console.log(err));
 
+// Anything that goes to http://localhost:5000/users/
+// goes in User.js
+const userRoutes = require('./routes/User');
+app.use('/users', userRoutes);
+
+
+// Method: GET
+// The homepage
 app.get('/', (req, res) => res.json({
     msg: "Hello Amingo!!"
 }));
 
-const userRoutes = require('./routes/User')
-app.use('/users', userRoutes);
 
+// Method: POST
+// Creates a new post
 app.post('/posts', (req, res) => {
     User
     .findOne({email: req.body.email})
@@ -41,7 +52,7 @@ app.post('/posts', (req, res) => {
     })
 });
 
-//Method: GET
+// Method: GET
 // Route to fetch all the posts from collection
 app.get('/posts', (req, res) => {
     Post.find()
@@ -49,6 +60,8 @@ app.get('/posts', (req, res) => {
         .catch(err => console.log(err)) 
 });
 
+// If port is specified, user it. Otherwise default to 5000
 const port = process.env.PORT || 5000;
 
+// Connect to the port.
 app.listen(port, () => console.log(`Your application is runnint @ http://localhost:${port}`));
