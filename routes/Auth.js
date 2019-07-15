@@ -7,6 +7,7 @@ const keys = require('../config/keys');
 const router = express.Router();
 
 //Register route
+// http://localhost:5000/auth/register
 router.post('/register', (req, res) => {
     User.findOne({email: req.body.email})
         .then(user => {
@@ -33,9 +34,45 @@ router.post('/register', (req, res) => {
         })
 });
 
-//Login route
+
+/**
+ * Post route for login.
+ * 
+ * @name POST: /auth/login/
+ * 
+ * @param {string} email - email of the user
+ * @param {string} password - password of user
+ */
 router.post('/login', (req, res) => {
-    
-})
+   User.findOne({email: req.body.email})
+    .then(user=>{
+        if(!user) {
+            return res.status(400).json({"message": "Email doesn't exist"});
+        } else {
+            bcrypt.compare(req.body.password, user.password)
+                .then(isMatch => {
+                    
+                    if (isMatch) {
+                        const payload = {id: user.id, name: user.name, email: user.email};
+
+                        // Sign Token
+                        jwt.sign(
+                            payload,
+                            keys.secret,
+                            (err, token) => {
+                                res.json({
+                                    success: true,
+                                    token: token,
+                                    name: user.name
+                                });
+                            }
+                        );
+                    } else {
+                        return res.status(400).json({"message": "Password is invalid"})
+                    }
+                })
+        }
+    })
+});
 
 module.exports = router;
