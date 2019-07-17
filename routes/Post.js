@@ -4,34 +4,50 @@ const User = require('../models/User');
 
 const router = express.Router();
 
-// Method: POST
-// Creates a new post
+/**
+ * Post route for creating a new message
+ * 
+ * @name POST: /posts/
+ * 
+ * @param {string} message - message to post in posts collection
+ */
 router.post('/', (req, res) => {
-    User
-    .findOne({email: req.body.email})
-    .then( user => {
-        console.log("User found", user);
-        if (user) {
-            const newPost = new Post({
-                message: req.body.message,
-                user: user
-            })
-            newPost
-                .save()
-                .then(post=> res.json (post))
-                .catch(err => res.json(err))
-        } else {
-            return res.status(400).json({message: "User not found"})
-        }
+    const newPost = new Post({
+        message: req.body.message,
+        user: req.user
     })
+    newPost
+        .save()
+        .then(post=> res.json (post))
+        .catch(err => res.json(err))
 });
 
-// Method: GET
-// Route to fetch all the posts from collection
+/**
+ * Get rout for fetching logged in user posts
+ * 
+ * @name GET: /posts/
+ */
 router.get('/', (req, res) => {
-    Post.find()
+    Post.find({user: req.user})
         .then(posts => res.json(posts))
-        .catch(err => console.log(err)) 
+        .catch(err => res.json(err)) 
 });
+
+/**
+ * Post route to like a post
+ * 
+ * @name POST: /posts/:id/like
+ * @param {string} id - Id of the post
+ */
+router.post('/:id/like', (req, res) => {
+    Post.findById(req.params.id)
+        .then(post => {
+            post.likes.push(req.user);
+            post.save()
+                .then(_post=>{
+                    res.json({"message": "success"})
+                })
+        })
+})
 
 module.exports = router;

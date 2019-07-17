@@ -6,8 +6,16 @@ const keys = require('../config/keys');
 
 const router = express.Router();
 
-//Register route
-// http://localhost:5000/auth/register
+/**
+ * Post route for register a new user.
+ * 
+ * @name Post /users/register
+ * 
+ * @param {string} email - email of the user
+ * @param {string} password - password of the user
+ * @param {string} name - name of the user
+ * @param {string} gender - gender of the user
+ */
 router.post('/register', (req, res) => {
     User.findOne({email: req.body.email})
         .then(user => {
@@ -17,7 +25,8 @@ router.post('/register', (req, res) => {
                 const newUser = new User({
                     name: req.body.name,
                     email: req.body.email,
-                    password: req.body.password
+                    password: req.body.password,
+                    gender: req.body.gender
                 });
 
                 bcrypt.genSalt((err, salt) => {
@@ -33,7 +42,6 @@ router.post('/register', (req, res) => {
             }
         })
 });
-
 
 /**
  * Post route for login.
