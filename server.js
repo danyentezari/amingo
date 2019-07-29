@@ -2,18 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
+const cors = require('cors');
 const keys = require('./config/keys');
 const passport = require('passport');
 
 // Configure express to read body from a POST request
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+//Configure express to use cors
+app.use(cors());
 
 // Database connection string
 const db = keys.mongoURI;
 
 // Connect to mongo with mongoose
 mongoose
-    .connect(db, {})
+    .connect(db, { useNewUrlParser: true })
     .then(()=> console.log("Db Connected"))
     .catch(err => console.log(err));
 
@@ -40,6 +45,10 @@ app.use('/auth', authRoutes);
 app.get('/', (req, res) => res.json({
     msg: "Hello Amingo!!"
 }));
+
+app.post('/register-user', (req, res) => {
+    res.json({ msg: 'done' })
+});
 
 // If port is specified, user it. Otherwise default to 5000
 const port = process.env.PORT || 5000;
